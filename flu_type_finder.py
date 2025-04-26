@@ -141,40 +141,43 @@ flu_infos = [
     }
 ]
 
-def search_flu(symptom):
-    result = ""
-    found = False
-    for flu in flu_infos:
-        if re.search(symptom, flu["症状"]) or re.search(symptom, flu["症状_en"], re.IGNORECASE):
-            found = True
-            result += f"🦠 **流感种类 / Flu Type:**\n{flu['流感种类']}\n\n"
-            result += f"💊 **常用药品 / Medications:**\n{flu['常用药品']}\n\n"
-            result += f"📋 **剂量范围 / Dosage:**\n{flu['剂量范围']}\n\n"
-            result += f"⚠️ **注意事项 / Notes:**\n{flu['注意事项']}\n"
-            result += "---\n\n"
-    if not found:
-        result = "❌ 未找到匹配项 / No matching flu type found."
-    return result
-
-# Streamlit 页面设置
+# 页面基本设置
 st.set_page_config(page_title="流感类型智能查询器 / Flu Type Finder", page_icon="🦠", layout="centered")
 
-# 页面美化（字体适配）
+# 自定义全局CSS样式（字体、按钮统一、整体间距调整）
 st.markdown(
     """
     <style>
     html, body, [class*="css"]  {
-        font-size: 16px; /* 基础字体大小 */
+        font-size: 16px;
     }
     @media (max-width: 768px) {
         html, body, [class*="css"] {
-            font-size: 14px; /* 手机小屏时，字体稍小 */
+            font-size: 14px;
         }
     }
     @media (min-width: 1600px) {
         html, body, [class*="css"] {
-            font-size: 18px; /* 超大屏时字体稍大 */
+            font-size: 18px;
         }
+    }
+    /* 按钮统一美化 */
+    div.stButton > button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 6px 16px;
+        margin: 5px 2px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: bold;
+    }
+    div.stButton > button:hover {
+        background-color: #45a049;
+    }
+    /* 让查询结果行距更舒服 */
+    .stMarkdown {
+        line-height: 1.6;
     }
     </style>
     """,
@@ -182,37 +185,55 @@ st.markdown(
 )
 
 st.title("🦠 流感类型智能查询器 / Flu Type Finder")
-
 st.markdown("请输入相关病症关键词（支持中英文），点击查询：")
 
-# 用户输入
+# 流感数据
+flu_infos = [
+    # 你的 flu_infos 列表在这里粘贴，保持不动
+]
+
+# 搜索函数
+def search_flu(symptom):
+    symptom = re.sub(r"[^\w\s]", "", symptom.strip().lower())  # 删除标点符号
+    result = ""
+    found = False
+    for flu in flu_infos:
+        if re.search(symptom, flu["症状"]) or re.search(symptom, flu["症状_en"], re.IGNORECASE):
+            found = True
+            result += f"---\n\n"
+            result += f"🌿 **流感种类 / Flu Type:** {flu['流感种类']}\n\n"
+            result += f"💊 **常用药品 / Medications:** {flu['常用药品']}\n\n"
+            result += f"📋 **剂量范围 / Dosage:** {flu['剂量范围']}\n\n"
+            result += f"⚠️ **注意事项 / Notes:** {flu['注意事项']}\n\n"
+    if not found:
+        result = "❌ 未找到匹配项 / No matching flu type found."
+    return result
+
+# 输入框
 symptom_input = st.text_input("病症关键词 / Symptom Keyword")
 
 # 查询按钮
-if st.button("查询 / Search"):
+if st.button("🔍 查询 / Search"):
     if symptom_input:
-        result = search_flu(symptom_input.strip().lower())
-        st.markdown(result)
+        st.markdown(search_flu(symptom_input))
     else:
-        st.warning("请输入病症关键词 / Please enter a symptom keyword.")
+        st.warning("请输入病症关键词 / Please enter a symptom关键词.")
 
-st.markdown("### 常见症状快捷入口")
+# 快捷常见症状
+st.markdown("### 📝 常见症状快捷入口 / Common Symptoms")
 
-# 快速按钮区域
 col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown("#### 中文症状 Common Chinese Symptoms")
+    st.subheader("中文症状")
     common_symptoms_cn = ["咳嗽", "头痛", "鼻塞", "咽痛", "高热"]
     for sym in common_symptoms_cn:
-        if st.button(sym):
-            result = search_flu(sym)
-            st.markdown(result)
+        if st.button(sym, key=f"cn_{sym}"):
+            st.markdown(search_flu(sym))
 
 with col2:
-    st.markdown("#### 英文症状 Common English Symptoms")
+    st.subheader("English Symptoms")
     common_symptoms_en = ["cough", "headache", "sore throat", "fatigue", "runny nose"]
     for sym in common_symptoms_en:
-        if st.button(sym):
-            result = search_flu(sym)
-            st.markdown(result)
+        if st.button(sym, key=f"en_{sym}"):
+            st.markdown(search_flu(sym))
