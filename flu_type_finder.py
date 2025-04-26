@@ -159,6 +159,28 @@ def search_flu(symptom):
 # Streamlit 页面设置
 st.set_page_config(page_title="流感类型智能查询器 / Flu Type Finder", page_icon="🦠", layout="centered")
 
+# 页面美化（字体适配）
+st.markdown(
+    """
+    <style>
+    html, body, [class*="css"]  {
+        font-size: 16px; /* 基础字体大小 */
+    }
+    @media (max-width: 768px) {
+        html, body, [class*="css"] {
+            font-size: 14px; /* 手机小屏时，字体稍小 */
+        }
+    }
+    @media (min-width: 1600px) {
+        html, body, [class*="css"] {
+            font-size: 18px; /* 超大屏时字体稍大 */
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 st.title("🦠 流感类型智能查询器 / Flu Type Finder")
 
 st.markdown("请输入相关病症关键词（支持中英文），点击查询：")
