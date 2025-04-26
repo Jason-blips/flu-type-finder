@@ -187,11 +187,6 @@ st.markdown(
 st.title("🦠 流感类型智能查询器 / Flu Type Finder")
 st.markdown("请输入相关病症关键词（支持中英文），点击查询：")
 
-# 流感数据
-flu_infos = [
-    # 你的 flu_infos 列表在这里粘贴，保持不动
-]
-
 # 搜索函数
 def search_flu(symptom):
     symptom = re.sub(r"[^\w\s]", "", symptom.strip().lower())  # 删除标点符号
